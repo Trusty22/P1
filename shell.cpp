@@ -11,7 +11,7 @@ int main(void) {
     printf("osh>");
     fflush(stdout);
 
-    if (should_run) {
+    if (!should_run) {
       return 0;
     }
 
