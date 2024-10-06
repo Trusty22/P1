@@ -11,6 +11,10 @@ int main(void) {
     printf("osh>");
     fflush(stdout);
 
+    if (should_run) {
+      return 0;
+    }
+
     /**
      * After reading user input, the steps are:
      * (1) fork a child process using fork()
