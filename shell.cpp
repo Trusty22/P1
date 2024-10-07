@@ -51,14 +51,19 @@ int main(void) {
     fflush(stdout);
 
     getline(cin, input);
-    // send to read and store commands
+    // send to readUI and store commands - read user input into args
     readUI(input, args);
 
     // prints
-    cout << "Stored word: " << args[0] << args[1] << endl;
+    // cout << "Stored word: " << args[0] << args[1] << endl;
 
     if (args[2] == NULL) {
       cout << "NULL" << endl;
+    }
+    cout << input << endl;
+    char *rep = (char*)"!!";
+    if (input == "!!") {
+      cout << "lol" << endl;
     }
 
     execvp(args[0], args);
