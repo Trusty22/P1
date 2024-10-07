@@ -1,3 +1,4 @@
+#include <bits/stdc++.h>
 #include <cstring>
 #include <iostream>
 #include <sstream>
@@ -9,19 +10,51 @@
 using namespace std;
 
 void readUI(string in, char *args[]) {
-  int maxL = in.length();
-  istringstream iss(in);
-  string s;
 
-  while (getline(iss, s, ' ')) {
-    cout << s << endl;
+  int maxL = 0;
+  int counter = 0;
+  string temp = in;
+
+  // calculate max amount words
+  stringstream stream(temp);
+  string oneWord;
+
+  while (stream >> oneWord) {
+    ++maxL;
+  }
+  cout << maxL << endl;
+
+  // convert the word to char* to store in args
+
+  istringstream iss(in);
+  string word;
+
+  *args = new char[maxL - 1];
+  while (iss >> word) {
+
+    if (counter < maxL) {
+      // strcpy(*args, );
+      
+      *args[counter] = *word.c_str();
+
+      
+      counter++;
+
+    } else {
+      break;
+    }
+  }
+
+  cout << "khkj" << endl;
+  for (int i = 0; i <= maxL; i++) {
+    cout << args[i] << endl;
   }
 }
 
 int main(void) {
   char *args[MAX_LINE / 2 + 1]; /* command line arguments */
   int should_run = 1;           /* flag to determine when to exit program */
-  string input = "yo my boy";
+  string input = "ls -l";
 
   while (should_run) {
     printf("osh>");
