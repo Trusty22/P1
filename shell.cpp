@@ -52,16 +52,14 @@ void readUI(string in, char *args[]) {
 int main(void) {
   char *args[MAX_LINE / 2 + 1]; /* command line arguments */
   int should_run = 1;           /* flag to determine when to exit program */
-  string input = "ls -l";
+  string input = "";
 
   while (should_run) {
     printf("osh>");
     fflush(stdout);
-    if (input == "") {
-      return 0;
-    }
+
+    getline(cin, input);
     // send to read and store commands
-    cout << input << endl;
     readUI(input, args);
     cout << "Stored word: " << args[0] << args[1] << endl;
 
