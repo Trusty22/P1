@@ -29,26 +29,24 @@ void readUI(string in, char *args[]) {
   istringstream iss(in);
   string word;
 
-  *args = new char[maxL - 1];
-  while (iss >> word) {
+  //*args = new char[2];//maxL + 1];
+  while (iss >> word && counter <= maxL) {
 
-    if (counter < maxL) {
-      // strcpy(*args, );
-      
-      *args[counter] = *word.c_str();
+    // strcpy(*args, );
+    args[counter] = new char[word.length() + 1]; // +1 for the null terminator
 
-      
-      counter++;
+    strcpy(args[counter], word.c_str());
+    cout << "Stored word: " << args[counter] << endl;
 
-    } else {
-      break;
-    }
+    counter++;
+  }
+  args[counter] = NULL;
+
+  if (args[counter] == NULL) {
+    cout << "NULL " << endl;
   }
 
   cout << "khkj" << endl;
-  for (int i = 0; i <= maxL; i++) {
-    cout << args[i] << endl;
-  }
 }
 
 int main(void) {
@@ -65,6 +63,11 @@ int main(void) {
     // send to read and store commands
     cout << input << endl;
     readUI(input, args);
+    cout << "Stored word: " << args[0] << args[1] << endl;
+
+    if (args[2] == NULL) {
+      cout << "NULL";
+    }
     return 0;
 
     /**
