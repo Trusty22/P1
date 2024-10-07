@@ -24,29 +24,21 @@ void readUI(string in, char *args[]) {
   }
   cout << maxL << endl;
 
-  // convert the word to char* to store in args
+  // convert the word to char* to store in *args[]
 
   istringstream iss(in);
   string word;
 
-  //*args = new char[2];//maxL + 1];
+  // while there is stream to go in string before char conversion and we haven't reached string length
   while (iss >> word && counter <= maxL) {
+    // create new space for word as a token of a char
 
-    // strcpy(*args, );
     args[counter] = new char[word.length() + 1]; // +1 for the null terminator
-
+                                                 // put token in args and end with null
     strcpy(args[counter], word.c_str());
-    cout << "Stored word: " << args[counter] << endl;
-
     counter++;
   }
   args[counter] = NULL;
-
-  if (args[counter] == NULL) {
-    cout << "NULL " << endl;
-  }
-
-  cout << "khkj" << endl;
 }
 
 int main(void) {
@@ -61,10 +53,12 @@ int main(void) {
     getline(cin, input);
     // send to read and store commands
     readUI(input, args);
+
+    // prints
     cout << "Stored word: " << args[0] << args[1] << endl;
 
     if (args[2] == NULL) {
-      cout << "NULL";
+      cout << "NULL" << endl;
     }
     return 0;
 
