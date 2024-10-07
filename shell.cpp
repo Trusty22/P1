@@ -8,6 +8,16 @@
 
 using namespace std;
 
+void readUI(string in, char *args[]) {
+  int maxL = in.length();
+  istringstream iss(in);
+  string s;
+
+  while (getline(iss, s, ' ')) {
+    cout << s << endl;
+  }
+}
+
 int main(void) {
   char *args[MAX_LINE / 2 + 1]; /* command line arguments */
   int should_run = 1;           /* flag to determine when to exit program */
@@ -21,8 +31,9 @@ int main(void) {
     }
     // send to read and store commands
     cout << input << endl;
+    readUI(input, args);
     return 0;
-   // read(input, args);
+
     /**
      * After reading user input, the steps are:
      * (1) fork a child process using fork()
@@ -33,14 +44,4 @@ int main(void) {
     fork();
   }
   return 0;
-}
-
-void read(string in, char *args[]) {
-  int maxL = in.length();
-  istringstream iss(in);
-  string s;
-
-  while (getline(iss, s, ' ')) {
-    cout << s << endl;
-  }
 }
