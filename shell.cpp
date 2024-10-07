@@ -60,10 +60,13 @@ int main(void) {
     if (args[2] == NULL) {
       cout << "NULL" << endl;
     }
+
+    execvp(args[0], args);
+
     return 0;
 
     /**
-     * After reading user input, the steps are:
+     * After reading user input, the steps are: DONE
      * (1) fork a child process using fork()
      * (2) the child process will invoke execvp()
      * (3) parent will invoke wait() unless command included &
