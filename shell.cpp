@@ -55,17 +55,17 @@ int main(void) {
     readUI(input, args);
 
     // prints
-    // cout << "Stored word: " << args[0] << args[1] << endl;
 
     if (args[2] == NULL) {
       cout << "NULL" << endl;
     }
     cout << input << endl;
-    char *rep = (char*)"!!";
+    char *rep = (char *)"!!";
     if (input == "!!") {
       cout << "lol" << endl;
     }
-
+    cout << "Stored word: " << args[0] << args[1] << endl;
+    // first determin command that doesnt work like | & < > !! and redirtct to its seperate function
     execvp(args[0], args);
 
     return 0;
