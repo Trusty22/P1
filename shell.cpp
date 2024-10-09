@@ -60,14 +60,15 @@ void readUI(string in, char *args[], char *copyArgs[]) {
 
   copyArray(args, copyArgs);
 
-  //printArray(args);
-  //printArray(copyArgs);
+  // printArray(args);
+  // printArray(copyArgs);
 }
 
 int main(void) {
   char *args[MAX_LINE / 2 + 1]; /* command line arguments */
   int should_run = 1;           /* flag to determine when to exit program */
   string input = "";
+  bool isFirstRun = true;
 
   char *copyArgs[MAX_LINE / 2 + 1];
 
@@ -83,21 +84,30 @@ int main(void) {
       should_run = 0;
       break;
     }
+    if (input == "!!") {
 
+      if (isFirstRun) {
+        cout << "INVALID: No Previous Command" << endl;
+      } else {
+        isFirstRun = false;
+        *args = *copyArgs;
+      }
+
+    } else {
+      readUI(input, args, copyArgs);
+      isFirstRun = false;
+    }
+    printArray(args);
     // send to readUI and store commands - read user input into args
-    readUI(input, args, copyArgs);
 
     // prints
 
-    if (args[2] == NULL) {
-      cout << "NULL" << endl;
-    }
+    /* string s1(commands[0]);
+     string s2(args[0]);
 
-    string s1(commands[0]);
-    string s2(args[0]);
+     if (s1 == s2) { // if use last command !! store last command
+     }*/
 
-    if (s1 == s2) { // if use last command !! store last command
-    }
     // cout << "Stored word: " << args[0] << args[1] << endl;
     //  first determin command that doesnt work like | & < > !! and redirtct to its seperate function
 
