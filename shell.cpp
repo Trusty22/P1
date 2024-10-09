@@ -8,7 +8,7 @@
 #define MAX_LINE 80 /* The maximum length command */
 
 using namespace std;
-void printArray(char *array[]) {
+void printArrayEx(char *array[]) {
 
   cout << "--ARRAY PRINT--" << endl;
   int i;
@@ -20,6 +20,21 @@ void printArray(char *array[]) {
     cout << "NULL" << endl;
   }
   cout << endl;
+}
+
+void printArray(char *array[]) {
+
+  int i;
+  for (i = 0; array[i] != NULL; i++) {
+    cout << array[i] << " ";
+  }
+
+  if (array[i] == NULL) {
+    cout << endl;
+  } else {
+    cout << "INVALID PRINT: EXITING";
+    exit(0);
+  }
 }
 
 void copyArray(char *args[], char *copyArgs[]) {
@@ -87,36 +102,40 @@ int main(void) {
     if (input == "!!") {
 
       if (isFirstRun) {
-        cout << "INVALID: No Previous Command" << endl;
+        cout << "INVALID: No commands in history" << endl;
       } else {
         isFirstRun = false;
-        *args = *copyArgs;
+        copyArray(args, copyArgs);
+
+        printf("osh>");
+        fflush(stdout);
+        printArray(copyArgs);
       }
 
     } else {
       readUI(input, args, copyArgs);
       isFirstRun = false;
     }
-    printArray(args);
-    // send to readUI and store commands - read user input into args
+    /*
+    // printArrayEx(args);
+    //  send to readUI and store commands - read user input into args
 
     // prints
 
-    /* string s1(commands[0]);
+     string s1(commands[0]);
      string s2(args[0]);
 
      if (s1 == s2) { // if use last command !! store last command
-     }*/
+     }
 
     // cout << "Stored word: " << args[0] << args[1] << endl;
+    */
+
     //  first determin command that doesnt work like | & < > !! and redirtct to its seperate function
 
     if (args[0] == "exit") {
-      should_run = 0;
-    } else {
-      // execvp(args[0], args);
+      exit(0);
     }
-    // return 0;
 
     /**
      * After reading user input, the steps are: DONE
@@ -125,8 +144,9 @@ int main(void) {
      * (3) parent will invoke wait() unless command included &
      */
 
-    // fork();
-    // cout << endl;
+    // start with fork (1)
+    fork();
+    execvp(args[0], args);
   }
   return 0;
 }
