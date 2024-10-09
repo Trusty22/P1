@@ -8,8 +8,29 @@
 #define MAX_LINE 80 /* The maximum length command */
 
 using namespace std;
+void printArray(char *array[]) {
 
-void readUI(string in, char *args[]) {
+  cout << "--ARRAY PRINT--" << endl;
+  int i;
+  for (i = 0; array[i] != NULL; i++) {
+    cout << array[i] << endl;
+  }
+
+  if (array[i] == NULL) {
+    cout << "NULL" << endl;
+  }
+  cout << endl;
+}
+
+void copyArray(char *args[], char *copyArgs[]) {
+  int i;
+  for (i = 0; args[i] != NULL; i++) {
+    copyArgs[i] = args[i];
+  }
+  copyArgs[i] = NULL;
+}
+
+void readUI(string in, char *args[], char *copyArgs[]) {
 
   int maxL = 0;
   int counter = 0;
@@ -22,7 +43,6 @@ void readUI(string in, char *args[]) {
   while (stream >> oneWord) {
     ++maxL;
   }
-  cout << maxL << endl;
 
   // convert the word to char* to store in *args[]
 
@@ -31,20 +51,25 @@ void readUI(string in, char *args[]) {
 
   // while there is stream to go in string before char conversion and we haven't reached string length
   while (iss >> word && counter <= maxL) {
-    // create new space for word as a token of a char
 
-    args[counter] = new char[word.length() + 1]; // +1 for the null terminator
-                                                 // put token in args and end with null
-    strcpy(args[counter], word.c_str());
+    args[counter] = new char[word.length() + 1]; // create new space for word as a token of a char && +1 for the null terminator
+    strcpy(args[counter], word.c_str());         // put token in args and end with null
     counter++;
   }
   args[counter] = NULL;
+
+  copyArray(args, copyArgs);
+
+  //printArray(args);
+  //printArray(copyArgs);
 }
 
 int main(void) {
   char *args[MAX_LINE / 2 + 1]; /* command line arguments */
   int should_run = 1;           /* flag to determine when to exit program */
   string input = "";
+
+  char *copyArgs[MAX_LINE / 2 + 1];
 
   char *commands[] = {(char *)"!!", (char *)"|", (char *)"&", (char *)"<", (char *)">"};
 
@@ -53,29 +78,33 @@ int main(void) {
     fflush(stdout);
 
     getline(cin, input);
+
+    if (input == "exit") {
+      should_run = 0;
+      break;
+    }
+
     // send to readUI and store commands - read user input into args
-    readUI(input, args);
+    readUI(input, args, copyArgs);
 
     // prints
 
     if (args[2] == NULL) {
       cout << "NULL" << endl;
     }
-    cout << input << endl;
-    char *rep = (char *)"!!";
 
     string s1(commands[0]);
     string s2(args[0]);
 
     if (s1 == s2) { // if use last command !! store last command
     }
-    cout << "Stored word: " << args[0] << args[1] << endl;
-    // first determin command that doesnt work like | & < > !! and redirtct to its seperate function
+    // cout << "Stored word: " << args[0] << args[1] << endl;
+    //  first determin command that doesnt work like | & < > !! and redirtct to its seperate function
 
     if (args[0] == "exit") {
       should_run = 0;
     } else {
-      execvp(args[0], args);
+      // execvp(args[0], args);
     }
     // return 0;
 
@@ -87,6 +116,7 @@ int main(void) {
      */
 
     // fork();
+    // cout << endl;
   }
   return 0;
 }
