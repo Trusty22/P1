@@ -46,6 +46,8 @@ int main(void) {
   int should_run = 1;           /* flag to determine when to exit program */
   string input = "";
 
+  char *commands[] = {(char *)"!!", (char *)"|", (char *)"&", (char *)"<", (char *)">"};
+
   while (should_run) {
     printf("osh>");
     fflush(stdout);
@@ -61,14 +63,21 @@ int main(void) {
     }
     cout << input << endl;
     char *rep = (char *)"!!";
-    if (input == "!!") {
-      cout << "lol" << endl;
+
+    string s1(commands[0]);
+    string s2(args[0]);
+
+    if (s1 == s2) { // if use last command !! store last command
     }
     cout << "Stored word: " << args[0] << args[1] << endl;
     // first determin command that doesnt work like | & < > !! and redirtct to its seperate function
-    execvp(args[0], args);
 
-    return 0;
+    if (args[0] == "exit") {
+      should_run = 0;
+    } else {
+      execvp(args[0], args);
+    }
+    // return 0;
 
     /**
      * After reading user input, the steps are: DONE
@@ -77,7 +86,7 @@ int main(void) {
      * (3) parent will invoke wait() unless command included &
      */
 
-    fork();
+    // fork();
   }
   return 0;
 }
