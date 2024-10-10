@@ -3,6 +3,7 @@
 #include <iostream>
 #include <sstream>
 #include <stdio.h>
+#include <sys/wait.h>
 #include <unistd.h>
 
 #define MAX_LINE 80 /* The maximum length command */
@@ -145,8 +146,11 @@ int main(void) {
      */
 
     // start with fork (1)
-    fork();
-    execvp(args[0], args);
+    if (fork() == 0) { // child
+      execvp(args[0], args);
+    } else { // parent
+      cout << "exec" << endl;
+    }
   }
   return 0;
 }
