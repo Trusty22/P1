@@ -84,6 +84,7 @@ void readUI(string in, char *args[], char *copyArgs[]) {
 int main(void) {
   char *args[MAX_LINE / 2 + 1]; /* command line arguments */
   int should_run = 1;           /* flag to determine when to exit program */
+  int andPos;
   string input = "";
   bool isFirstRun = true;
   bool hasAnd = false;
@@ -149,6 +150,7 @@ int main(void) {
         string s4(commands[4]);
         if (s1 == s2) {
           hasAnd = true; // & means no parent waiting
+          andPos = i;
           cout << "has &" << endl;
         }
         if (s1 == s3) {          // take command from file and run it in osh
@@ -185,16 +187,27 @@ int main(void) {
       cout << "child" << endl;
       printf("osh>");
       fflush(stdout);
+      if (hasAnd) {
+        for (int i = 0; args[i] != NULL; i++) {
+          string s1(args[i]);
+          if(s1== "&"){
+            args[i] = NULL;
+          }
+        }
+      }
 
       execvp(args[0], args);
     } else { // parent & means no parent waiting
+      if (hasAnd) {
+        wait(NULL);
+      }
       cout << "parents" << endl;
       printf("osh>p");
       fflush(stdout);
     }
 
     exit(0);
-    return;
+    return 0;
     /*
         // pipe(pipe_fd);
         int rc = fork();
