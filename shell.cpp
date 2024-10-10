@@ -97,6 +97,7 @@ int main(void) {
   char *commands[] = {(char *)"!!", (char *)"|", (char *)"&", (char *)"<", (char *)">"};
 
   while (should_run) {
+    char *args[MAX_LINE / 2 + 1];
     printf("osh>");
     fflush(stdout);
 
@@ -107,6 +108,7 @@ int main(void) {
       exit(0);
       break;
     }
+
     if (input.find("!!") != string::npos) {
 
       if (isFirstRun) {
@@ -185,29 +187,40 @@ int main(void) {
 
     if (rc == 0) { // child
       cout << "child" << endl;
-      printf("osh>");
-      fflush(stdout);
+      // deal with & wait
       if (hasAnd) {
         for (int i = 0; args[i] != NULL; i++) {
           string s1(args[i]);
-          if(s1== "&"){
+          if (s1 == "&") {
             args[i] = NULL;
           }
         }
       }
 
       execvp(args[0], args);
+      cout << "uncreconized command" << endl;
+      exit(0);
+      return 0;
+
     } else { // parent & means no parent waiting
-      if (hasAnd) {
+      if (!hasAnd) {
         wait(NULL);
       }
-      cout << "parents" << endl;
-      printf("osh>p");
-      fflush(stdout);
+
+      // printf("osh>P:");
+      // fflush(stdout);
+    }
+    if (rc < 0) {
+      cerr << "Fork failed";
+      exit(0);
+      return 0;
     }
 
-    exit(0);
-    return 0;
+    if (input == "exit") {
+      exit(0);
+      return 0;
+    }
+
     /*
         // pipe(pipe_fd);
         int rc = fork();
