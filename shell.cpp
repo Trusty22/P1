@@ -186,7 +186,7 @@ int main(void) {
     int rc = fork();
 
     if (rc == 0) { // child
-    //  cout << "child" << endl;
+                   //  cout << "child" << endl;
       // deal with & wait
       if (hasAnd) {
         for (int i = 0; args[i] != NULL; i++) {
@@ -196,10 +196,13 @@ int main(void) {
           }
         }
       }
-
-      execvp(args[0], args);
-      cout << "uncreconized command" << endl;
-      exit(0); //kill it
+      cout << "child" << endl;
+      if (input != "") {
+        execvp(args[0], args);
+        cout << " Unrecognized Command" << endl;
+      }
+      
+      exit(0); // kill it
       return 0;
 
     } else { // parent & means no parent waiting
