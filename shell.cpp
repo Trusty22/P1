@@ -151,28 +151,50 @@ int main(void) {
           hasAnd = true; // & means no parent waiting
           cout << "has &" << endl;
         }
-        if (s1 == s3) { // take command from file and run it in osh
-          hasRunFromFile = true;
+        if (s1 == s3) {          // take command from file and run it in osh
+          hasRunFromFile = true; // execlp(args[0], args[2], args[3]);
           cout << " has <" << endl;
 
-        } else if (s1 == s4) { // write left command to file
-          cout << " has >" << endl;
+        } else if (s1 == s4) {      // write left command to file
+          cout << " has >" << endl; // execlp(args[0], args[2], args[3]);
           hasPutInFile = true;
         }
       }
     }
-    execlp(args[0], args[2], args[3]);
-    execvp(args[0], args);
 
-    //  first determin command that doesnt work like | & < > !! and redirtct to its seperate function
+    //  first determin command that doesnt work like & < > !! and redirtct to its seperate function DONE
 
     /**
+     *
+     * Instructions
+     * 1. Creating the child process and executing the command in the child
+     * 2. Providing a history feature DONE
+     * 3. Adding support of input and output redirection Detection done, Implementaion needed execlp(args[0], args[2], args[3]); left command (<,>) right command
+     * 4. Allowing the parent and child processes to communicate via a pipe
+     *
      * After reading user input, the steps are: DONE
      * (1) fork a child process using fork()
      * (2) the child process will invoke execvp()
      * (3) parent will invoke wait() unless command included &
      */
 
+    // start with fork (1)
+    int rc = fork();
+
+    if (rc == 0) { // child
+      cout << "child" << endl;
+      printf("osh>");
+      fflush(stdout);
+
+      execvp(args[0], args);
+    } else { // parent & means no parent waiting
+      cout << "parents" << endl;
+      printf("osh>p");
+      fflush(stdout);
+    }
+
+    exit(0);
+    return;
     /*
         // pipe(pipe_fd);
         int rc = fork();
