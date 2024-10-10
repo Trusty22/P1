@@ -3,6 +3,7 @@
 #include <iostream>
 #include <sstream>
 #include <stdio.h>
+#include <string>
 #include <sys/wait.h>
 #include <unistd.h>
 
@@ -85,7 +86,8 @@ int main(void) {
   int should_run = 1;           /* flag to determine when to exit program */
   string input = "";
   bool isFirstRun = true;
-  bool isAnd = false;
+  bool hasAnd = false;
+  bool hasPastCommand = false;
 
   char *copyArgs[MAX_LINE / 2 + 1];
 
@@ -102,12 +104,14 @@ int main(void) {
       exit(0);
       break;
     }
-    if (input == "!!") {
+    if (input.find("!!") != string::npos) {
 
       if (isFirstRun) {
+        hasPastCommand = false;
         cout << "INVALID: No commands in history" << endl;
       } else {
         isFirstRun = false;
+        hasPastCommand = true;
         copyArray(args, copyArgs);
 
         printf("osh>");
@@ -142,14 +146,18 @@ int main(void) {
      * (2) the child process will invoke execvp()
      * (3) parent will invoke wait() unless command included &
      */
-
-    for (int i = 0; args[i] != NULL; i++) {
-      string s1(args[i]);
-      string s2(commands[2]);
-      if (s1 == s2) {
-        isAnd = true;
+    // methodize
+    if (!isFirstRun) {
+      for (int i = 0; args[i] != NULL; i++) {
+        string s1(args[i]);
+        string s2(commands[2]);
+        if (s1 == s2) {
+          hasAnd = true; // & means no parent waiting
+          cout << "has &" << endl;
+        }
       }
     }
+
     /*
         // pipe(pipe_fd);
         int rc = fork();
