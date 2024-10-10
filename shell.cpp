@@ -85,6 +85,7 @@ int main(void) {
   int should_run = 1;           /* flag to determine when to exit program */
   string input = "";
   bool isFirstRun = true;
+  bool isAnd = false;
 
   char *copyArgs[MAX_LINE / 2 + 1];
 
@@ -98,6 +99,7 @@ int main(void) {
 
     if (input == "exit") {
       should_run = 0;
+      exit(0);
       break;
     }
     if (input == "!!") {
@@ -134,30 +136,36 @@ int main(void) {
 
     //  first determin command that doesnt work like | & < > !! and redirtct to its seperate function
 
-    if (args[0] == "exit") {
-      exit(0);
-    }
-
     /**
      * After reading user input, the steps are: DONE
      * (1) fork a child process using fork()
      * (2) the child process will invoke execvp()
      * (3) parent will invoke wait() unless command included &
      */
-    cout << "start pipe" << endl;
-    int pipe_fd[2];
 
-    pipe(pipe_fd);
-    int rc = fork();
-    // start with fork (1)
-    if (rc == 0) { // child
-      cout << "child" << endl;
-      close(pipe_fd[1]); // right side 0 | 1
-      execvp(args[0], args);
-    } else { // parent
-      cout << "parent" << endl;
+    for (int i = 0; args[i] != NULL; i++) {
+      string s1(args[i]);
+      string s2(commands[2]);
+      if (s1 == s2) {
+        isAnd = true;
+      }
     }
-    exit(0);
+    /*
+        // pipe(pipe_fd);
+        int rc = fork();
+        // start with fork (1)
+        if (rc == 0) { // child
+          cout << "child" << endl;
+          // close(pipe_fd[1]); // right side 0 | 1
+          cout << "osh> child";
+          execvp(args[0], args);
+        } else { // parent & means no parent waiting
+          cout << "parent osh> ";
+          // wait(NULL); // waits till child exits
+        }
+        exit(0);
+        return 0;
+        */
   }
   return 0;
 }
