@@ -88,6 +88,8 @@ int main(void) {
   bool isFirstRun = true;
   bool hasAnd = false;
   bool hasPastCommand = false;
+  bool hasRunFromFile = false;
+  bool hasPutInFile = false;
 
   char *copyArgs[MAX_LINE / 2 + 1];
 
@@ -138,6 +140,30 @@ int main(void) {
     // cout << "Stored word: " << args[0] << args[1] << endl;
     */
 
+    // methodize &
+    if (!isFirstRun) {
+      for (int i = 0; args[i] != NULL; i++) {
+        string s1(args[i]);
+        string s2(commands[2]);
+        string s3(commands[3]);
+        string s4(commands[4]);
+        if (s1 == s2) {
+          hasAnd = true; // & means no parent waiting
+          cout << "has &" << endl;
+        }
+        if (s1 == s3) { // take command from file and run it in osh
+          hasRunFromFile = true;
+          cout << " has <" << endl;
+
+        } else if (s1 == s4) { // write left command to file
+          cout << " has >" << endl;
+          hasPutInFile = true;
+        }
+      }
+    }
+    execlp(args[0], args[2], args[3]);
+    execvp(args[0], args);
+
     //  first determin command that doesnt work like | & < > !! and redirtct to its seperate function
 
     /**
@@ -146,17 +172,6 @@ int main(void) {
      * (2) the child process will invoke execvp()
      * (3) parent will invoke wait() unless command included &
      */
-    // methodize
-    if (!isFirstRun) {
-      for (int i = 0; args[i] != NULL; i++) {
-        string s1(args[i]);
-        string s2(commands[2]);
-        if (s1 == s2) {
-          hasAnd = true; // & means no parent waiting
-          cout << "has &" << endl;
-        }
-      }
-    }
 
     /*
         // pipe(pipe_fd);
