@@ -144,13 +144,20 @@ int main(void) {
      * (2) the child process will invoke execvp()
      * (3) parent will invoke wait() unless command included &
      */
+    cout << "start pipe" << endl;
+    int pipe_fd[2];
 
+    pipe(pipe_fd);
+    int rc = fork();
     // start with fork (1)
-    if (fork() == 0) { // child
+    if (rc == 0) { // child
+      cout << "child" << endl;
+      close(pipe_fd[1]); // right side 0 | 1
       execvp(args[0], args);
     } else { // parent
-      cout << "exec" << endl;
+      cout << "parent" << endl;
     }
+    exit(0);
   }
   return 0;
 }
