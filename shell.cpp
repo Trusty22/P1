@@ -144,26 +144,25 @@ int main(void) {
     */
 
     // methodize &
-    if (input != "") {
-      for (int i = 0; args[i] != NULL; i++) {
-        string s1(args[i]);
-        string s2(commands[2]);
-        string s3(commands[3]);
-        string s4(commands[4]);
-        if (s1 == s2) {
-          hasAnd = true; // & means no parent waiting
-          andPos = i;
-          args[andPos] = NULL;
-          printArrayEx(args);
-        }
-        if (s1 == s3) {          // take command from file and run it in osh
-          hasRunFromFile = true; // execlp(args[0], args[2], args[3]);
-          cout << " has <" << endl;
 
-        } else if (s1 == s4) {      // write left command to file
-          cout << " has >" << endl; // execlp(args[0], args[2], args[3]);
-          hasPutInFile = true;
-        }
+    for (int i = 0; args[i] != NULL; i++) {
+      string s1(args[i]);
+      string s2(commands[2]);
+      string s3(commands[3]);
+      string s4(commands[4]);
+      if (s1 == s2) {
+        hasAnd = true; // & means no parent waiting
+        andPos = i;
+        args[andPos] = NULL;
+       // printArrayEx(args);
+      }
+      if (s1 == s3) {          // take command from file and run it in osh
+        hasRunFromFile = true; // execlp(args[0], args[2], args[3]);
+        cout << " has <" << endl;
+
+      } else if (s1 == s4) {      // write left command to file
+        cout << " has >" << endl; // execlp(args[0], args[2], args[3]);
+        hasPutInFile = true;
       }
     }
 
@@ -187,26 +186,20 @@ int main(void) {
     int rc = fork();
 
     if (rc == 0) { // child
-                   //  cout << "child" << endl;
+      
+      printArrayEx(args);
 
-      // deal with & wait
-
-      // cout << "child" << endl;
-      if (input != "") {
-        execvp(args[0], args);
-        cout << " Unrecognized Command" << endl;
-      }
+    //  execvp(args[0], args);
+      cout << " Unrecognized Command" << endl;
 
       exit(0); // kill it
       return 0;
 
     } else { // parent & means no parent waiting
-      if (!hasAnd) {
-        wait(NULL);
-      } else {
-        printf("osh>");
-        fflush(stdout);
-      }
+      // if (!hasAnd) {
+      //   wait(NULL);
+      // }
+
       // hasAnd = false;
     }
 
