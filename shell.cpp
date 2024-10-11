@@ -1,11 +1,18 @@
 #include <bits/stdc++.h>
 #include <csignal>
 #include <cstring>
+#include <ctype.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <fstream>
 #include <iostream>
+#include <signal.h>
 #include <sstream>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string>
 #include <sys/wait.h>
+
 #include <unistd.h>
 
 #define MAX_LINE 80 /* The maximum length command */
@@ -41,8 +48,25 @@ void printArray(char *array[]) {
 }
 void handle_sigchld(int sig) {
   // Reap any child process to prevent zombie processes
+  // found on stack overflow it solved my & problem of it messing uo my command prompts
+  // due to zombie forks being created.
   while (waitpid(-1, NULL, WNOHANG) > 0)
     ;
+}
+void write(char *args[], int pos) {
+
+  // int file = open(args[pos + 1], O_CREAT | O_WRONLY | O_TRUNC, 0644); // Open file with write permissions
+
+  int file = open(args[pos + 1], O_CREAT | O_WRONLY | O_TRUNC, 0644);
+  dup2(file, STDOUT_FILENO);
+  // if (file < 0) {
+  //   perror("INVALID: FILE CANT OPEN");
+  //   exit(0);
+  // }
+  // dup2("file", STDOUT_FILENO); // Redirect standard output to the file
+  close(file);
+  // args[pos] = NULL; // Terminate the command before the `>`
+  return;
 }
 
 void copyArray(char *args[], char *copyArgs[]) {
@@ -94,17 +118,18 @@ int main(void) {
   char *args[MAX_LINE / 2 + 1]; /* command line arguments */
   int should_run = 1;           /* flag to determine when to exit program */
   int andPos;
+  int pos;
   string input = "";
   bool isFirstRun = true;
   bool hasAnd = false;
   bool hasPastCommand = false;
-  bool hasRunFromFile = false;
-  bool hasPutInFile = false;
+
+  bool readFromFile = false;
+  bool writeToFile = false;
 
   char *copyArgs[MAX_LINE / 2 + 1];
 
   char *commands[] = {(char *)"!!", (char *)"|", (char *)"&", (char *)"<", (char *)">"};
-
   while (should_run) {
     *args[MAX_LINE / 2 + 1];
 
@@ -152,13 +177,15 @@ int main(void) {
         args[andPos] = NULL;
         break;
       }
-      if (s1 == s3) {          // take command from file and run it in osh
-        hasRunFromFile = true; // execlp(args[0], args[2], args[3]);
+      if (s1 == s3) {        // take command from file and run it in osh
+        readFromFile = true; // execlp(args[0], args[2], args[3]);
         cout << " has <" << endl;
 
-      } else if (s1 == s4) {      // write left command to file
-        cout << " has >" << endl; // execlp(args[0], args[2], args[3]);
-        hasPutInFile = true;
+      } else if (s1 == s4) { // write left command to file
+        writeToFile = true;
+        pos = i;
+        break;
+        //        cout << " has >" << endl; // execlp(args[0], args[2], args[3]);
       }
     }
 
@@ -167,21 +194,28 @@ int main(void) {
     /**
      *
      * Instructions
-     * 1. Creating the child process and executing the command in the child
+     * 1. Creating the child process and executing the command in the child DONE
      * 2. Providing a history feature DONE
      * 3. Adding support of input and output redirection Detection done, Implementaion needed execlp(args[0], args[2], args[3]); left command (<,>) right command
      * 4. Allowing the parent and child processes to communicate via a pipe
      *
      * After reading user input, the steps are: DONE
-     * (1) fork a child process using fork()
-     * (2) the child process will invoke execvp()
-     * (3) parent will invoke wait() unless command included &
+     * (1) fork a child process using fork() DONE
+     * (2) the child process will invoke execvp() DOne
+     * (3) parent will invoke wait() unless command included & Done
      */
 
     // start with fork (1)
     int rc = fork();
 
     if (rc == 0) { // child
+      if (writeToFile) {
+        write(args, pos); // writing
+        execlp(args[0], args[1], args[2], args[3]);
+        cout << " Unrecognized Command" << endl;
+        exit(0); // kill it
+        return 0;
+      }
 
       execvp(args[0], args);
       cout << " Unrecognized Command" << endl;
@@ -193,13 +227,10 @@ int main(void) {
       if (hasAnd) {
         fflush(stdout);
         hasAnd = false; // Reset the flag
-
       } else {
         wait(NULL);
         hasAnd = false;
       }
-      while (waitpid(-1, NULL, WNOHANG) > 0)
-        ;
     }
 
     if (rc < 0) {
@@ -210,4 +241,3 @@ int main(void) {
   }
   return 0;
 }
-//te
