@@ -1,4 +1,5 @@
 #include <bits/stdc++.h>
+#include <csignal>
 #include <cstring>
 #include <iostream>
 #include <sstream>
@@ -37,6 +38,11 @@ void printArray(char *array[]) {
     cout << "INVALID PRINT: EXITING";
     exit(0);
   }
+}
+void handle_sigchld(int sig) {
+  // Reap any child process to prevent zombie processes
+  while (waitpid(-1, NULL, WNOHANG) > 0)
+    ;
 }
 
 void copyArray(char *args[], char *copyArgs[]) {
@@ -82,6 +88,9 @@ void readUI(string in, char *args[], char *copyArgs[]) {
 }
 
 int main(void) {
+
+  signal(SIGCHLD, handle_sigchld);
+
   char *args[MAX_LINE / 2 + 1]; /* command line arguments */
   int should_run = 1;           /* flag to determine when to exit program */
   int andPos;
@@ -97,7 +106,8 @@ int main(void) {
   char *commands[] = {(char *)"!!", (char *)"|", (char *)"&", (char *)"<", (char *)">"};
 
   while (should_run) {
-    char *args[MAX_LINE / 2 + 1];
+    *args[MAX_LINE / 2 + 1];
+
     printf("osh>");
     fflush(stdout);
 
@@ -128,20 +138,6 @@ int main(void) {
       readUI(input, args, copyArgs);
       isFirstRun = false;
     }
-    /*
-    // printArrayEx(args);
-    //  send to readUI and store commands - read user input into args
-
-    // prints
-
-     string s1(commands[0]);
-     string s2(args[0]);
-
-     if (s1 == s2) { // if use last command !! store last command
-     }
-
-    // cout << "Stored word: " << args[0] << args[1] << endl;
-    */
 
     // methodize &
 
@@ -150,11 +146,11 @@ int main(void) {
       string s2(commands[2]);
       string s3(commands[3]);
       string s4(commands[4]);
-      if (s1 == s2) {
-        hasAnd = true; // & means no parent waiting
+      if (s1 == s2) { // & means no parent waiting
+        hasAnd = true;
         andPos = i;
         args[andPos] = NULL;
-       // printArrayEx(args);
+        break;
       }
       if (s1 == s3) {          // take command from file and run it in osh
         hasRunFromFile = true; // execlp(args[0], args[2], args[3]);
@@ -186,30 +182,28 @@ int main(void) {
     int rc = fork();
 
     if (rc == 0) { // child
-      
-      printArrayEx(args);
 
-    //  execvp(args[0], args);
+      execvp(args[0], args);
       cout << " Unrecognized Command" << endl;
 
       exit(0); // kill it
       return 0;
 
-    } else { // parent & means no parent waiting
-      // if (!hasAnd) {
-      //   wait(NULL);
-      // }
+    } else if (rc > 0) { // parent & means no parent waiting
+      if (hasAnd) {
+        fflush(stdout);
+        hasAnd = false; // Reset the flag
 
-      // hasAnd = false;
+      } else {
+        wait(NULL);
+        hasAnd = false;
+      }
+      while (waitpid(-1, NULL, WNOHANG) > 0)
+        ;
     }
 
     if (rc < 0) {
       cerr << "Fork failed";
-      exit(0);
-      return 0;
-    }
-
-    if (input == "exit") {
       exit(0);
       return 0;
     }
