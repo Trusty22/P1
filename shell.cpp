@@ -144,7 +144,7 @@ int main(void) {
     */
 
     // methodize &
-    if (!isFirstRun) {
+    if (input != "") {
       for (int i = 0; args[i] != NULL; i++) {
         string s1(args[i]);
         string s2(commands[2]);
@@ -153,7 +153,8 @@ int main(void) {
         if (s1 == s2) {
           hasAnd = true; // & means no parent waiting
           andPos = i;
-          cout << "has &" << endl;
+          args[andPos] = NULL;
+          printArrayEx(args);
         }
         if (s1 == s3) {          // take command from file and run it in osh
           hasRunFromFile = true; // execlp(args[0], args[2], args[3]);
@@ -187,32 +188,28 @@ int main(void) {
 
     if (rc == 0) { // child
                    //  cout << "child" << endl;
+
       // deal with & wait
-      if (hasAnd) {
-        for (int i = 0; args[i] != NULL; i++) {
-          string s1(args[i]);
-          if (s1 == "&") {
-            args[i] = NULL;
-          }
-        }
-      }
-      cout << "child" << endl;
+
+      // cout << "child" << endl;
       if (input != "") {
         execvp(args[0], args);
         cout << " Unrecognized Command" << endl;
       }
-      
+
       exit(0); // kill it
       return 0;
 
     } else { // parent & means no parent waiting
       if (!hasAnd) {
         wait(NULL);
+      } else {
+        printf("osh>");
+        fflush(stdout);
       }
-
-      // printf("osh>P:");
-      // fflush(stdout);
+      // hasAnd = false;
     }
+
     if (rc < 0) {
       cerr << "Fork failed";
       exit(0);
@@ -223,23 +220,6 @@ int main(void) {
       exit(0);
       return 0;
     }
-
-    /*
-        // pipe(pipe_fd);
-        int rc = fork();
-        // start with fork (1)
-        if (rc == 0) { // child
-          cout << "child" << endl;
-          // close(pipe_fd[1]); // right side 0 | 1
-          cout << "osh> child";
-          execvp(args[0], args);
-        } else { // parent & means no parent waiting
-          cout << "parent osh> ";
-          // wait(NULL); // waits till child exits
-        }
-        exit(0);
-        return 0;
-        */
   }
   return 0;
 }
